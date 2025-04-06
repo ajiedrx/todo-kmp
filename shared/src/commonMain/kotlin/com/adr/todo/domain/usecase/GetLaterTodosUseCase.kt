@@ -1,0 +1,9 @@
+package com.adr.todo.domain.usecase
+
+import com.adr.todo.data.TodoRepository
+import com.adr.todo.domain.model.Todo
+import kotlinx.coroutines.flow.Flow
+
+class GetLaterTodosUseCase(private val repository: TodoRepository) {
+    fun execute(): Flow<List<Todo>> = repository.observeLaterTodos()
+}
