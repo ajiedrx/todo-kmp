@@ -1,3 +1,4 @@
+
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.compose.compiler)
@@ -41,10 +42,15 @@ kotlin {
                 implementation(compose.runtime)
                 implementation(compose.foundation)
                 implementation(compose.material3)
+                implementation(compose.material)
+                implementation(compose.materialIconsExtended)
                 implementation(libs.kotlinx.datetime)
                 implementation(libs.kotlinx.coroutine.core)
                 implementation(libs.androidx.room.runtime)
                 implementation(libs.sqlite.bundled)
+                implementation(libs.koin.core)
+                implementation(libs.common.viewmodel)
+                implementation(libs.koin.compose.mp)
             }
         }
 
@@ -57,6 +63,9 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(libs.androidx.core.ktx)
+                implementation(libs.compose.preview)
+                implementation(compose.uiTooling)
+                implementation(libs.koin.android)
             }
         }
 
@@ -84,16 +93,19 @@ dependencies {
     add("kspIosX64", libs.androidx.room.compiler)
     add("kspIosArm64", libs.androidx.room.compiler)
     add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+
+    debugImplementation(libs.android.compose.ui.tooling)
 }
 
 android {
-    namespace = "com.adr.todo"
+    namespace = "com.adr.todo.shared"
     compileSdk = 35
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_18
         targetCompatibility = JavaVersion.VERSION_18
         isCoreLibraryDesugaringEnabled = true
     }
+    sourceSets["main"].manifest.srcFile("src/androidMain/AndroidManifest.xml")
     defaultConfig {
         minSdk = 21
     }

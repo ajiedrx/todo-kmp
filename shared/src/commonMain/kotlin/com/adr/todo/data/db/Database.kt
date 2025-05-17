@@ -29,6 +29,10 @@ fun getRoomDatabase(
         .build()
 }
 
+fun getTodoDao(appDatabase: AppDatabase): TodoDao {
+    return appDatabase.getDao()
+}
+
 // The Room compiler generates the `actual` implementations.
 @Suppress("NO_ACTUAL_FOR_EXPECT")
 expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {

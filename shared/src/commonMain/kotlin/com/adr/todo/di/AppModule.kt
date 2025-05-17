@@ -1,0 +1,26 @@
+package com.adr.todo.di
+
+import com.adr.todo.data.db.getRoomDatabase
+import com.adr.todo.data.db.getTodoDao
+import com.adr.todo.data.repository.TodoRepositoryImpl
+import com.adr.todo.domain.usecase.TodoUseCases
+import com.adr.todo.presentation.ui.detail.DetailViewModel
+import com.adr.todo.presentation.ui.history.HistoryViewModel
+import com.adr.todo.presentation.ui.main.MainViewModel
+import org.koin.dsl.module
+
+val appModule = module {
+    single { getRoomDatabase(get()) }
+    single { getTodoDao(get()) }
+
+    single { TodoRepositoryImpl(get()) }
+    single { TodoUseCases(get()) }
+
+    single { MainViewModel(get(), get()) }
+    single { DetailViewModel(get(), get()) }
+    single { HistoryViewModel(get()) }
+
+    includes(getPlatformSpecificModule())
+}
+
+expect fun getPlatformSpecificModule(): org.koin.core.module.Module

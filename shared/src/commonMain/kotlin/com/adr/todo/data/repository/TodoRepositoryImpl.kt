@@ -22,6 +22,12 @@ class TodoRepositoryImpl(
         }
     }
 
+    override fun observeCompletedTodos(): Flow<List<Todo>> {
+        return todoDao.observeCompletedTodos().map { entities ->
+            entities.map { it.toDomain() }
+        }
+    }
+
     override fun observeLaterTodos(): Flow<List<Todo>> {
         return todoDao.observeLaterTodos().map { entities ->
             entities.map { it.toDomain() }

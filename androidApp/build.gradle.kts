@@ -22,7 +22,7 @@ android {
     defaultConfig {
         applicationId = "com.adr.todo.android"
         minSdk = 21
-        targetSdk = 34
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
     }
@@ -51,4 +51,9 @@ android {
 
 dependencies {
     implementation(projects.shared)
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.android.compose.ui)
+    implementation(libs.android.compose.ui.tooling)
+    implementation(libs.android.compose.activity)
+    implementation(libs.android.compose.material)
 }
