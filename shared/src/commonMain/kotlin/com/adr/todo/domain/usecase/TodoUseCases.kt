@@ -1,6 +1,6 @@
 package com.adr.todo.domain.usecase
 
-import com.adr.todo.data.TodoRepository
+import com.adr.todo.data.repository.TodoRepository
 
 class TodoUseCases(repository: TodoRepository) {
     val getTodayTodos = GetTodayTodosUseCase(repository)

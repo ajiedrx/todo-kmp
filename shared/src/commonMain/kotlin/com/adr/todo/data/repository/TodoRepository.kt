@@ -1,9 +1,8 @@
-package com.adr.todo.data
+package com.adr.todo.data.repository
 
 import com.adr.todo.domain.model.Todo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.Instant
-import kotlinx.datetime.LocalDate
 
 interface TodoRepository {
     suspend fun getTodoById(id: Long): Todo?

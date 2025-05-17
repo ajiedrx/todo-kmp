@@ -40,7 +40,12 @@ kotlin {
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutine.core)
             implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.room.compiler)
+            implementation(libs.androidx.room.gradle.plugin)
             implementation(libs.sqlite.bundled)
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material)
         }
 
         commonTest.dependencies {
@@ -49,6 +54,10 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.androidx.core.ktx)
+        }
+
+        iosMain.dependencies {
+
         }
     }
 
