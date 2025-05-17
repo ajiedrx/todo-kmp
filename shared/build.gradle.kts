@@ -1,8 +1,8 @@
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
 }
@@ -20,10 +20,10 @@ kotlin {
         iosX64(),
         iosArm64(),
         iosSimulatorArm64()
-    ).forEach {
-        it.binaries.framework {
+    ).forEach { iosTarget ->
+        iosTarget.binaries.framework {
             baseName = "shared"
-            binaryOption("bundleId", "com.adr.todo.shared")
+            isStatic = true
         }
     }
 
@@ -36,38 +36,58 @@ kotlin {
     }
 
     sourceSets {
-        commonMain.dependencies {
-            implementation(libs.kotlinx.datetime)
-            implementation(libs.kotlinx.coroutine.core)
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.androidx.room.compiler)
-            implementation(libs.androidx.room.gradle.plugin)
-            implementation(libs.sqlite.bundled)
-            implementation(compose.runtime)
-            implementation(compose.foundation)
-            implementation(compose.material)
+        val commonMain by getting {
+            dependencies {
+                implementation(compose.runtime)
+                implementation(compose.foundation)
+                implementation(compose.material3)
+                implementation(libs.kotlinx.datetime)
+                implementation(libs.kotlinx.coroutine.core)
+                implementation(libs.androidx.room.runtime)
+                implementation(libs.sqlite.bundled)
+            }
         }
 
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+        val commonTest by getting {
+            dependencies {
+                implementation(libs.kotlin.test)
+            }
         }
 
-        androidMain.dependencies {
-            implementation(libs.androidx.core.ktx)
+        val androidMain by getting {
+            dependencies {
+                implementation(libs.androidx.core.ktx)
+            }
         }
 
-        iosMain.dependencies {
-
+        val iosMain by creating {
+            dependsOn(commonMain)
         }
-    }
-
-    room {
-        schemaDirectory("$projectDir/schemas")
+        val iosX64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosArm64Main by getting {
+            dependsOn(iosMain)
+        }
+        val iosSimulatorArm64Main by getting {
+            dependsOn(iosMain)
+        }
     }
 }
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+}
+
 android {
-    namespace = "com.adr.todo.shared"
+    namespace = "com.adr.todo"
     compileSdk = 35
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_18
