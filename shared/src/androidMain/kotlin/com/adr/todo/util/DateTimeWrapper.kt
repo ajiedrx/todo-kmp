@@ -1,8 +1,9 @@
 package com.adr.todo.util
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.content.Context
+import com.adr.todo.ContextFactory
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.LocalDateTime
@@ -10,17 +11,14 @@ import kotlinx.datetime.LocalTime
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toInstant
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.inject
 import java.util.Calendar
 
 actual class DateTimeWrapper private constructor(
     private val calendar: Calendar,
 ) {
-    private val context: Context by inject()
-
-    actual fun showDatePicker(onDateSelected: (LocalDate?) -> Unit) {
+    actual fun showDatePicker(context: ContextFactory, onDateSelected: (LocalDate?) -> Unit) {
         DatePickerDialog(
-            context,
+            context.getActivity() as Activity,
             { _, year, month, day ->
                 val selectedDate = LocalDate(year, month + 1, day)
                 onDateSelected(selectedDate)
@@ -33,9 +31,9 @@ actual class DateTimeWrapper private constructor(
         }.show()
     }
 
-    actual fun showTimePicker(onTimeSelected: (LocalTime?) -> Unit) {
+    actual fun showTimePicker(context: ContextFactory, onTimeSelected: (LocalTime?) -> Unit) {
         TimePickerDialog(
-            context,
+            context.getActivity() as Activity,
             { _, hour, minute ->
                 val selectedTime = LocalTime(hour, minute)
                 onTimeSelected(selectedTime)

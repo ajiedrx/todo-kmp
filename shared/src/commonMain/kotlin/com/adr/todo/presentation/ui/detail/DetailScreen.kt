@@ -48,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.adr.todo.ContextFactory
 import com.adr.todo.presentation.ui.components.DateTimePicker
 import com.adr.todo.presentation.ui.components.ReminderOptionPicker
 import com.adr.todo.util.Constants
@@ -57,6 +58,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
+    contextFactory: ContextFactory,
     viewModel: DetailViewModel,
     onNavigateBack: () -> Unit,
     onNavigateBackAfterDelete: () -> Unit,
@@ -323,6 +325,7 @@ fun DetailScreen(
 
                 if (isEditMode || isCreateMode) {
                     DateTimePicker(
+                        contextFactory = contextFactory,
                         dateTime = detailScreenState.dueDateTime,
                         onDateTimeSelected = { viewModel.updateDueDateTime(it) },
                         label = Constants.DUE_DATE_LABEL,
@@ -357,6 +360,7 @@ fun DetailScreen(
 
                 if (isEditMode || isCreateMode) {
                     ReminderOptionPicker(
+                        contextFactory = contextFactory,
                         dueDateTime = detailScreenState.dueDateTime,
                         currentReminderDateTime = detailScreenState.reminderDateTime,
                         onReminderDateTimeSelected = { viewModel.updateReminderDateTime(it) },

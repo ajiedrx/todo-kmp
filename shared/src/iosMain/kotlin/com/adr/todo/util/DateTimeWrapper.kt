@@ -1,5 +1,6 @@
 package com.adr.todo.util
 
+import com.adr.todo.ContextFactory
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.cValue
 import kotlinx.cinterop.memScoped
@@ -32,7 +33,7 @@ actual class DateTimeWrapper private constructor(
     private val nsDate: NSDate,
 ) {
     @OptIn(ExperimentalForeignApi::class)
-    actual fun showDatePicker(onDateSelected: (LocalDate?) -> Unit) {
+    actual fun showDatePicker(context: ContextFactory, onDateSelected: (LocalDate?) -> Unit) {
         val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
             ?: return onDateSelected(null)
 
@@ -99,7 +100,7 @@ actual class DateTimeWrapper private constructor(
         onDateSelected(LocalDate(year, month, day))
     }
 
-    actual fun showTimePicker(onTimeSelected: (LocalTime?) -> Unit) {
+    actual fun showTimePicker(context: ContextFactory, onTimeSelected: (LocalTime?) -> Unit) {
         // Simplified implementation - similar to date picker
         val components = NSCalendar.currentCalendar.components(
             NSCalendarUnitHour or NSCalendarUnitMinute,

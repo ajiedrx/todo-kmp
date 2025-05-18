@@ -26,6 +26,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.adr.todo.ContextFactory
 import com.adr.todo.util.Constants
 import com.adr.todo.util.DateTimeFormatter
 import com.adr.todo.util.DateTimeWrapper
@@ -34,6 +35,7 @@ import kotlinx.datetime.Instant
 
 @Composable
 fun DateTimePicker(
+    contextFactory: ContextFactory,
     dateTime: Instant?,
     onDateTimeSelected: (Instant?) -> Unit,
     label: String,
@@ -119,7 +121,7 @@ fun DateTimePicker(
     }
 
     if (showDatePicker) {
-        dateTimeWrapper.showDatePicker { selectedDate ->
+        dateTimeWrapper.showDatePicker(context = contextFactory) { selectedDate ->
             if (selectedDate != null) {
                 val newDateTime = dateTimeWrapper.combineDateTime(
                     date = selectedDate,
@@ -133,7 +135,7 @@ fun DateTimePicker(
     }
 
     if (showTimePicker) {
-        dateTimeWrapper.showTimePicker { selectedTime ->
+        dateTimeWrapper.showTimePicker(context = contextFactory) { selectedTime ->
             if (selectedTime != null) {
                 val newDateTime = dateTimeWrapper.combineDateTime(
                     date = dateTime?.let { DateTimeWrapper.fromInstant(it).getDate() }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.adr.todo.ContextFactory
 import com.adr.todo.presentation.ui.detail.DetailScreen
 import com.adr.todo.presentation.ui.detail.DetailViewModel
 import com.adr.todo.presentation.ui.history.HistoryScreen
@@ -22,9 +23,9 @@ sealed class Screen {
 }
 
 @Composable
-fun AppNavigation(initialTodoId: Long? = null) {
+fun AppNavigation(platformContext: ContextFactory, initialTodoId: Long? = null) {
     var currentScreen by remember {
-        mutableStateOf<Screen>(
+        mutableStateOf(
             if (initialTodoId != null) Screen.Detail(initialTodoId) else Screen.Main
         )
     }
@@ -71,6 +72,7 @@ fun AppNavigation(initialTodoId: Long? = null) {
             }
 
             DetailScreen(
+                contextFactory = platformContext,
                 viewModel = detailViewModel,
                 onNavigateBack = {
                     currentScreen = Screen.Main
@@ -83,6 +85,7 @@ fun AppNavigation(initialTodoId: Long? = null) {
 
         is Screen.Create -> {
             DetailScreen(
+                contextFactory = platformContext,
                 viewModel = detailViewModel,
                 onNavigateBack = {
                     currentScreen = Screen.Main

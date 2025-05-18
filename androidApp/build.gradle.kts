@@ -39,9 +39,11 @@ android {
             isMinifyEnabled = false
         }
     }
+    sourceSets["main"].manifest.srcFile("src/main/AndroidManifest.xml")
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_18
+        targetCompatibility = JavaVersion.VERSION_18
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlin {
@@ -56,4 +58,6 @@ dependencies {
     implementation(libs.android.compose.ui.tooling)
     implementation(libs.android.compose.activity)
     implementation(libs.android.compose.material)
+    implementation(libs.koin.android)
+    coreLibraryDesugaring(libs.android.desugar.jdk)
 }

@@ -28,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.adr.todo.ContextFactory
 import com.adr.todo.domain.model.ReminderOption
 import com.adr.todo.util.Constants
 import com.adr.todo.util.DateTimeFormatter
@@ -37,6 +38,7 @@ import kotlinx.datetime.minus
 
 @Composable
 fun ReminderOptionPicker(
+    contextFactory: ContextFactory,
     dueDateTime: Instant?,
     currentReminderDateTime: Instant?,
     onReminderDateTimeSelected: (Instant?) -> Unit,
@@ -178,6 +180,7 @@ fun ReminderOptionPicker(
         if (selectedOption == ReminderOption.CUSTOM && dueDateTime != null) {
             Spacer(Modifier.height(Constants.MEDIUM_PADDING.dp))
             DateTimePicker(
+                contextFactory = contextFactory,
                 dateTime = customDateTime,
                 onDateTimeSelected = {
                     customDateTime = it

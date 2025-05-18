@@ -14,7 +14,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
-import com.adr.todo.app.MainActivity
 import com.adr.todo.domain.model.Todo
 import com.adr.todo.util.Constants
 import com.adr.todo.util.DateTimeFormatter
@@ -155,10 +154,7 @@ actual class NotificationService(private val context: Context) {
     }
 
     actual fun showNotification(todo: Todo) {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            putExtra(Constants.EXTRA_TODO_ID, todo.id)
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
+        val intent = createNotificationIntent(context, todo.id.toString())
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getActivity(
@@ -207,6 +203,14 @@ actual class NotificationService(private val context: Context) {
             notificationManager.notify(todo.id.toInt(), builder.build())
         } else {
             println(Constants.CANNOT_SHOW_NOTIFICATION)
+        }
+    }
+
+    fun createNotificationIntent(context: Context, todoId: String): Intent {
+        return Intent().apply {
+            setClassName(context.packageName, "com.adr.todo.android.MainActivity")
+            putExtra(Constants.EXTRA_TODO_ID, todoId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
     }
 }

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.adr.todo.domain.usecase.TodoUseCases
+import com.adr.todo.util.Constants
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,7 +16,7 @@ class NotificationReceiver : BroadcastReceiver(), KoinComponent {
     private val notificationService: NotificationService by inject()
 
     override fun onReceive(context: Context, intent: Intent) {
-        val todoId = intent.getLongExtra(NotificationService.EXTRA_TODO_ID, -1)
+        val todoId = intent.getLongExtra(Constants.EXTRA_TODO_ID, -1)
         if (todoId == -1L) return
 
         // Show the notification

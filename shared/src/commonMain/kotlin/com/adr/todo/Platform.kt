@@ -5,3 +5,9 @@ interface Platform {
 }
 
 expect fun getPlatform(): Platform
+
+expect class ContextFactory {
+    fun getContext(): Any
+    fun getApplication(): Any
+    fun getActivity(): Any
+}

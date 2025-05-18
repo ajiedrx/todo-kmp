@@ -1,6 +1,8 @@
 package com.adr.todo.app
 
+import com.adr.todo.di.diModules
 import com.adr.todo.navigation.NavigationManager
+import org.koin.core.context.startKoin
 import platform.Foundation.NSNumber
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationDelegateProtocol
@@ -23,6 +25,7 @@ class AppDelegate : NSObject(), UIApplicationDelegateProtocol,
         didFinishLaunchingWithOptions: Map<Any?, *>?,
     ): Boolean {
         UNUserNotificationCenter.currentNotificationCenter().delegate = this
+        initKoin()
 
         return true
     }
@@ -55,6 +58,12 @@ class AppDelegate : NSObject(), UIApplicationDelegateProtocol,
         }
 
         withCompletionHandler()
+    }
+
+    fun initKoin() {
+        startKoin {
+            modules(diModules)
+        }
     }
 
     fun getInitialTodoId(): Long? {
