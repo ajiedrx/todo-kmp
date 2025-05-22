@@ -1,11 +1,11 @@
 package com.adr.todo.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.adr.todo.ContextFactory
 import com.adr.todo.presentation.ui.detail.DetailScreen
 import com.adr.todo.presentation.ui.detail.DetailViewModel
@@ -13,98 +13,77 @@ import com.adr.todo.presentation.ui.history.HistoryScreen
 import com.adr.todo.presentation.ui.history.HistoryViewModel
 import com.adr.todo.presentation.ui.main.MainScreen
 import com.adr.todo.presentation.ui.main.MainViewModel
+import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
 
 sealed class Screen {
+    @Serializable
     data object Main : Screen()
-    data class Detail(val todoId: Long) : Screen()
-    data object Create : Screen()
+
+    @Serializable
+    data class Detail(val todoId: Long? = null) : Screen()
+
+    @Serializable
     data object History : Screen()
 }
 
 @Composable
 fun AppNavigation(platformContext: ContextFactory, initialTodoId: Long? = null) {
-    var currentScreen by remember {
-        mutableStateOf(
-            if (initialTodoId != null) Screen.Detail(initialTodoId) else Screen.Main
-        )
-    }
+    val navController: NavHostController = rememberNavController()
 
     val mainViewModel = koinInject<MainViewModel>()
     val detailViewModel = koinInject<DetailViewModel>()
     val historyViewModel = koinInject<HistoryViewModel>()
 
-    val navigationDestination by NavigationManager.instance.currentDestination
-
-    LaunchedEffect(navigationDestination) {
-        navigationDestination?.let { destination ->
-            when (destination) {
-                is NavigationManager.Destination.TodoDetail -> {
-                    detailViewModel.loadTodo(destination.todoId)
-                    currentScreen = Screen.Detail(destination.todoId)
-                    NavigationManager.instance.clearDestination()
-                }
-            }
-        }
-    }
-
-    when (val screen = currentScreen) {
-        is Screen.Main -> {
+    NavHost(
+        navController = navController,
+        startDestination =
+            if (initialTodoId != null) Screen.Detail(todoId = initialTodoId)
+            else Screen.Main
+    ) {
+        composable<Screen.Main> {
             MainScreen(
                 viewModel = mainViewModel,
                 onNavigateToDetail = { todo ->
                     detailViewModel.loadTodo(todo.id)
-                    currentScreen = Screen.Detail(todo.id)
+                    navController.navigate(Screen.Detail(todoId = todo.id))
                 },
                 onNavigateToCreate = {
                     detailViewModel.startCreateMode()
-                    currentScreen = Screen.Create
+                    navController.navigate(Screen.Detail())
                 },
                 onNavigateToHistory = {
-                    currentScreen = Screen.History
+                    navController.navigate(Screen.History)
                 }
             )
         }
+        composable<Screen.Detail> { navBackStackEntry ->
+            val todoId = navBackStackEntry.toRoute<Screen.Detail>().todoId
 
-        is Screen.Detail -> {
-            LaunchedEffect(screen.todoId) {
-                detailViewModel.loadTodo(screen.todoId)
+            todoId?.let {
+                detailViewModel.loadTodo(it)
             }
 
             DetailScreen(
                 contextFactory = platformContext,
                 viewModel = detailViewModel,
                 onNavigateBack = {
-                    currentScreen = Screen.Main
+                    navController.navigate(Screen.Main)
                 },
                 onNavigateBackAfterDelete = {
-                    currentScreen = Screen.Main
+                    navController.navigate(Screen.Main)
                 }
             )
         }
-
-        is Screen.Create -> {
-            DetailScreen(
-                contextFactory = platformContext,
-                viewModel = detailViewModel,
-                onNavigateBack = {
-                    currentScreen = Screen.Main
-                },
-                onNavigateBackAfterDelete = {
-                    currentScreen = Screen.Main
-                }
-            )
-        }
-
-        is Screen.History -> {
+        composable<Screen.History> {
             HistoryScreen(
                 viewModel = historyViewModel,
                 onNavigateBack = {
-                    currentScreen = Screen.Main
+                    navController.navigate(Screen.Main)
                 },
                 onNavigateToCreate = { todo ->
                     detailViewModel.restoreFromHistory(todo)
-                    currentScreen = Screen.Create
+                    navController.navigate(Screen.Detail())
                 }
             )
         }

@@ -64,7 +64,7 @@ fun DetailScreen(
     onNavigateBackAfterDelete: () -> Unit,
 ) {
     val detailScreenState by viewModel.state.collectAsState()
-    val snackbarHostState = remember { SnackbarHostState() }
+    val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
     val scrollState = rememberScrollState()
 
@@ -88,7 +88,7 @@ fun DetailScreen(
                         detailScreenState.todo?.let {
                             viewModel.onDeleteTodo(it)
                             scope.launch {
-                                snackbarHostState.showSnackbar(Constants.TASK_DELETED)
+                                snackBarHostState.showSnackbar(Constants.TASK_DELETED)
                                 onNavigateBackAfterDelete()
                             }
                         }
@@ -192,7 +192,7 @@ fun DetailScreen(
                 }
             )
         },
-        snackbarHost = { SnackbarHost(snackbarHostState) }
+        snackbarHost = { SnackbarHost(snackBarHostState) }
     ) { paddingValues ->
         Box(
             modifier = Modifier

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.ksp)
     alias(libs.plugins.room)
+    alias(libs.plugins.kotlinSerialization)
 }
 
 dependencies {
@@ -51,6 +52,7 @@ kotlin {
                 implementation(libs.koin.core)
                 implementation(libs.common.viewmodel)
                 implementation(libs.koin.compose.mp)
+                implementation(libs.navigation.compose)
             }
         }
 

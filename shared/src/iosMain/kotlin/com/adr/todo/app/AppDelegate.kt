@@ -1,12 +1,10 @@
 package com.adr.todo.app
 
 import com.adr.todo.di.diModules
-import com.adr.todo.navigation.NavigationManager
 import org.koin.core.context.startKoin
 import platform.Foundation.NSNumber
 import platform.UIKit.UIApplication
 import platform.UIKit.UIApplicationDelegateProtocol
-import platform.UIKit.UIApplicationState
 import platform.UserNotifications.UNNotification
 import platform.UserNotifications.UNNotificationPresentationOptionAlert
 import platform.UserNotifications.UNNotificationPresentationOptionSound
@@ -48,19 +46,13 @@ class AppDelegate : NSObject(), UIApplicationDelegateProtocol,
         val todoId = (userInfo["todoId"] as? NSNumber)?.longValue()
 
         if (todoId != null) {
-            if (UIApplication.sharedApplication.applicationState == UIApplicationState.UIApplicationStateActive) {
-                NavigationManager.instance.navigateTo(
-                    NavigationManager.Destination.TodoDetail(todoId)
-                )
-            } else {
-                initialTodoId = todoId
-            }
+            initialTodoId = todoId
         }
 
         withCompletionHandler()
     }
 
-    fun initKoin() {
+    private fun initKoin() {
         startKoin {
             modules(diModules)
         }
