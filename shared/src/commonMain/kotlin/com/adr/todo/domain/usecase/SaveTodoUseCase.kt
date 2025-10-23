@@ -5,7 +5,9 @@ import com.adr.todo.domain.model.Todo
 
 class SaveTodoUseCase(private val repository: TodoRepository) {
     suspend fun execute(todo: Todo): Long {
-        return if (todo.id == 0L) {
+        val existingTodo = repository.getTodoById(todo.id)
+
+        return if (existingTodo == null) {
             repository.insertTodo(todo)
         } else {
             repository.updateTodo(todo)
