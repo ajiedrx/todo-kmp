@@ -1,6 +1,7 @@
 package com.adr.todo.service
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlarmManager
 import android.app.NotificationChannel
@@ -175,6 +176,7 @@ actual class NotificationService(private val context: Context) {
         showNotification(todo, pendingIntent)
     }
 
+    @SuppressLint("MissingPermission")
     fun showNotification(todo: Todo, contentIntent: PendingIntent) {
         val builder = NotificationCompat.Builder(context, Constants.NOTIFICATION_CHANNEL_ID)
             .setContentTitle(todo.title)
@@ -185,6 +187,7 @@ actual class NotificationService(private val context: Context) {
             .setContentIntent(contentIntent)
             .setAutoCancel(true)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+            .setSmallIcon(android.R.drawable.ic_dialog_info)
 
         todo.dueDateTime?.let { dueDate ->
             val formattedDueDate = DateTimeFormatter.formatDateTime(dueDate)
