@@ -15,6 +15,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.Clock
 import kotlinx.datetime.Instant
+import kotlin.random.Random
 
 class DetailViewModel(
     private val todoUseCases: TodoUseCases,
@@ -249,6 +250,7 @@ class DetailViewModel(
                     )
                 } else {
                     Todo(
+                        id = Random.nextLong(),
                         title = currentState.title,
                         description = currentState.description,
                         dueDateTime = currentState.dueDateTime,
