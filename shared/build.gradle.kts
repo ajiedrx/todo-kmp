@@ -103,8 +103,6 @@ android {
     namespace = "com.adr.todo.shared"
     compileSdk = 35
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_18
-        targetCompatibility = JavaVersion.VERSION_18
         isCoreLibraryDesugaringEnabled = true
     }
     sourceSets["main"].manifest.srcFile("src/main/AndroidManifest.xml")

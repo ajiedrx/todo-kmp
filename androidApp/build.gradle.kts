@@ -41,8 +41,6 @@ android {
     }
     sourceSets["main"].manifest.srcFile("src/main/AndroidManifest.xml")
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_18
-        targetCompatibility = JavaVersion.VERSION_18
         isCoreLibraryDesugaringEnabled = true
     }
 
