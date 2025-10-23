@@ -21,9 +21,21 @@ class NotificationReceiver : BroadcastReceiver(), KoinComponent {
 
         // Show the notification
         CoroutineScope(Dispatchers.IO).launch {
-            val todo = todoUseCases.getTodoDetail.execute(todoId)
-            if (todo != null) {
-                notificationService.showNotification(todo)
+            try {
+                val todo = todoUseCases.getTodoDetail.execute(todoId)
+                if (todo != null) {
+                    notificationService.showNotification(todo)
+                } else {
+                    val fallbackTodo = com.adr.todo.domain.model.Todo(
+                        id = todoId,
+                        title = intent.getStringExtra(Constants.EXTRA_TODO_TITLE) ?: "Unknown Task",
+                        description = intent.getStringExtra(Constants.EXTRA_TODO_DESCRIPTION) ?: "",
+                        createdAt = kotlinx.datetime.Clock.System.now(),
+                        updatedAt = kotlinx.datetime.Clock.System.now()
+                    )
+                    notificationService.showNotification(fallbackTodo)
+                }
+            } catch (_: Exception) {
             }
         }
     }
