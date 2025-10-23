@@ -11,6 +11,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -76,17 +77,23 @@ actual class NotificationService(private val context: Context) {
             putExtra(Constants.EXTRA_TODO_DUE_DATE, todo.dueDateTime?.toEpochMilliseconds() ?: 0L)
         }
 
+        val requestCode = if (todo.id == 0L) {
+            (System.currentTimeMillis() % Int.MAX_VALUE).toInt()
+        } else {
+            todo.id.toInt()
+        }
+
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getBroadcast(
                 context,
-                todo.id.toInt(),
+                requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         } else {
             PendingIntent.getBroadcast(
                 context,
-                todo.id.toInt(),
+                requestCode,
                 intent,
                 PendingIntent.FLAG_UPDATE_CURRENT
             )
@@ -97,34 +104,36 @@ actual class NotificationService(private val context: Context) {
             .toInstant()
             .toEpochMilli()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            try {
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                if (alarmManager.canScheduleExactAlarms()) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        triggerTimeMillis,
+                        pendingIntent
+                    )
+                } else {
+                    alarmManager.setAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        triggerTimeMillis,
+                        pendingIntent
+                    )
+                }
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 alarmManager.setExactAndAllowWhileIdle(
                     AlarmManager.RTC_WAKEUP,
                     triggerTimeMillis,
                     pendingIntent
                 )
-            } catch (e: Exception) {
-                alarmManager.setAndAllowWhileIdle(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTimeMillis,
-                    pendingIntent
-                )
-            }
-        } else {
-            try {
-                alarmManager.setExact(
-                    AlarmManager.RTC_WAKEUP,
-                    triggerTimeMillis,
-                    pendingIntent
-                )
-            } catch (e: Exception) {
+            } else {
                 alarmManager.set(
                     AlarmManager.RTC_WAKEUP,
                     triggerTimeMillis,
                     pendingIntent
                 )
             }
+        } catch (e: Exception) {
+            Log.e("ERROR_SCHEDULE",e.message ?: "-")
         }
     }
 
@@ -155,7 +164,7 @@ actual class NotificationService(private val context: Context) {
     }
 
     actual fun showNotification(todo: Todo) {
-        val intent = createNotificationIntent(context, todo.id.toString())
+        val intent = createNotificationIntent(context, todo.id)
 
         val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             PendingIntent.getActivity(
@@ -209,7 +218,7 @@ actual class NotificationService(private val context: Context) {
         }
     }
 
-    fun createNotificationIntent(context: Context, todoId: String): Intent {
+    fun createNotificationIntent(context: Context, todoId: Long): Intent {
         return Intent().apply {
             setClassName(context.packageName, "com.adr.todo.android.MainActivity")
             putExtra(Constants.EXTRA_TODO_ID, todoId)
