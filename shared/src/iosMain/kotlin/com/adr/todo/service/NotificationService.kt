@@ -13,6 +13,7 @@ import platform.Foundation.NSCalendarUnitYear
 import platform.Foundation.NSDate
 import platform.Foundation.NSNumber
 import platform.Foundation.dateWithTimeIntervalSince1970
+import platform.Foundation.numberWithLong
 import platform.UserNotifications.UNAuthorizationOptionAlert
 import platform.UserNotifications.UNAuthorizationOptionBadge
 import platform.UserNotifications.UNAuthorizationOptionSound
@@ -22,9 +23,6 @@ import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNNotificationSound
 import platform.UserNotifications.UNTimeIntervalNotificationTrigger
 import platform.UserNotifications.UNUserNotificationCenter
-import kotlin.collections.listOf
-import kotlin.collections.mutableMapOf
-import kotlin.collections.set
 
 actual class NotificationService {
     private val notificationCenter = UNUserNotificationCenter.currentNotificationCenter()
@@ -49,9 +47,9 @@ actual class NotificationService {
             setSound(UNNotificationSound.defaultSound())
 
             val userInfo = mutableMapOf<Any?, Any?>()
-            userInfo[KEY_TODO_ID] = NSNumber(todo.id)
+            userInfo[KEY_TODO_ID] = NSNumber.numberWithLong(todo.id)
             todo.dueDateTime?.let {
-                userInfo[KEY_DUE_DATE] = NSNumber(it.toEpochMilliseconds())
+                userInfo[KEY_DUE_DATE] = NSNumber.numberWithLong(it.toEpochMilliseconds())
             }
             setUserInfo(userInfo)
         }
@@ -95,9 +93,9 @@ actual class NotificationService {
             setSound(UNNotificationSound.defaultSound())
 
             val userInfo = mutableMapOf<Any?, Any?>()
-            userInfo[KEY_TODO_ID] = NSNumber(todo.id)
+            userInfo[KEY_TODO_ID] = NSNumber.numberWithLong(todo.id)
             todo.dueDateTime?.let {
-                userInfo[KEY_DUE_DATE] = NSNumber(it.toEpochMilliseconds())
+                userInfo[KEY_DUE_DATE] = NSNumber.numberWithLong(it.toEpochMilliseconds())
             }
             setUserInfo(userInfo)
         }
