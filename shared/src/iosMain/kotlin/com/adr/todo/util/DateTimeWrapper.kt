@@ -19,15 +19,15 @@ import platform.Foundation.NSOperatingSystemVersion
 import platform.Foundation.NSProcessInfo
 import platform.Foundation.dateWithTimeIntervalSince1970
 import platform.Foundation.timeIntervalSince1970
+import platform.UIKit.UIAlertAction
+import platform.UIKit.UIAlertActionStyleCancel
+import platform.UIKit.UIAlertActionStyleDefault
+import platform.UIKit.UIAlertController
+import platform.UIKit.UIAlertControllerStyleActionSheet
 import platform.UIKit.UIApplication
-import platform.UIKit.UIButton
-import platform.UIKit.UIButtonTypeSystem
-import platform.UIKit.UIColor
-import platform.UIKit.UIControlStateNormal
 import platform.UIKit.UIDatePicker
 import platform.UIKit.UIDatePickerMode
 import platform.UIKit.UIDatePickerStyle
-import platform.UIKit.UIView
 
 actual class DateTimeWrapper private constructor(
     private val nsDate: NSDate,
@@ -37,16 +37,16 @@ actual class DateTimeWrapper private constructor(
         val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
             ?: return onDateSelected(null)
 
-        val containerView = UIView().apply {
-            backgroundColor = UIColor.whiteColor
-            translatesAutoresizingMaskIntoConstraints = false
-        }
+        val alertController = UIAlertController.alertControllerWithTitle(
+            title = "Select Date",
+            message = "\n\n\n\n\n\n\n\n",
+            preferredStyle = UIAlertControllerStyleActionSheet
+        )
 
         val datePicker = UIDatePicker().apply {
             datePickerMode = UIDatePickerMode.UIDatePickerModeDate
             date = nsDate
 
-            // Set preferred style for iOS 13.4+
             if (NSProcessInfo.processInfo.isOperatingSystemAtLeastVersion(
                     memScoped {
                         cValue<NSOperatingSystemVersion> {
@@ -59,56 +59,92 @@ actual class DateTimeWrapper private constructor(
             ) {
                 preferredDatePickerStyle = UIDatePickerStyle.UIDatePickerStyleWheels
             }
-
-            translatesAutoresizingMaskIntoConstraints = false
         }
 
-        // Create overlay container
-        val overlayView = UIView().apply {
-            backgroundColor = UIColor.blackColor.colorWithAlphaComponent(0.4)
-            translatesAutoresizingMaskIntoConstraints = false
+        alertController.view.addSubview(datePicker)
+
+        val doneAction = UIAlertAction.actionWithTitle(
+            title = "Done",
+            style = UIAlertActionStyleDefault
+        ) { _ ->
+            val selectedDate = datePicker.date
+            val components = NSCalendar.currentCalendar.components(
+                NSCalendarUnitYear or NSCalendarUnitMonth or NSCalendarUnitDay,
+                fromDate = selectedDate
+            )
+            val year = components.year.toInt()
+            val month = components.month.toInt()
+            val day = components.day.toInt()
+            onDateSelected(LocalDate(year, month, day))
         }
+        alertController.addAction(doneAction)
 
-        // Add button container
-        val buttonContainer = UIView().apply {
-            backgroundColor = UIColor.whiteColor
-            translatesAutoresizingMaskIntoConstraints = false
+        val cancelAction = UIAlertAction.actionWithTitle(
+            title = "Cancel",
+            style = UIAlertActionStyleCancel
+        ) { _ ->
+            onDateSelected(null)
         }
+        alertController.addAction(cancelAction)
 
-        val cancelButton = UIButton.buttonWithType(UIButtonTypeSystem).apply {
-            setTitle("Cancel", UIControlStateNormal)
-            // Add action for cancel button
-            translatesAutoresizingMaskIntoConstraints = false
-        }
-
-        val doneButton = UIButton.buttonWithType(UIButtonTypeSystem).apply {
-            setTitle("Done", UIControlStateNormal)
-            // Add action for done button
-            translatesAutoresizingMaskIntoConstraints = false
-        }
-
-        // Add all views to hierarchy and set up constraints
-
-        // Simplified implementation - using direct callbacks
-        val components = NSCalendar.currentCalendar.components(
-            NSCalendarUnitYear or NSCalendarUnitMonth or NSCalendarUnitDay,
-            fromDate = nsDate
-        )
-        val year = components.year.toInt()
-        val month = components.month.toInt()
-        val day = components.day.toInt()
-        onDateSelected(LocalDate(year, month, day))
+        rootViewController.presentViewController(alertController, animated = true, completion = null)
     }
 
+    @OptIn(ExperimentalForeignApi::class)
     actual fun showTimePicker(context: ContextFactory, onTimeSelected: (LocalTime?) -> Unit) {
-        // Simplified implementation - similar to date picker
-        val components = NSCalendar.currentCalendar.components(
-            NSCalendarUnitHour or NSCalendarUnitMinute,
-            fromDate = nsDate
+        val rootViewController = UIApplication.sharedApplication.keyWindow?.rootViewController
+            ?: return onTimeSelected(null)
+
+        val alertController = UIAlertController.alertControllerWithTitle(
+            title = "Select Time",
+            message = "\n\n\n\n\n\n\n\n",
+            preferredStyle = UIAlertControllerStyleActionSheet
         )
-        val hour = components.hour.toInt()
-        val minute = components.minute.toInt()
-        onTimeSelected(LocalTime(hour, minute))
+
+        val timePicker = UIDatePicker().apply {
+            datePickerMode = UIDatePickerMode.UIDatePickerModeTime
+            date = nsDate
+
+            if (NSProcessInfo.processInfo.isOperatingSystemAtLeastVersion(
+                    memScoped {
+                        cValue<NSOperatingSystemVersion> {
+                            majorVersion = 13L
+                            minorVersion = 4L
+                            patchVersion = 0L
+                        }
+                    }
+                )
+            ) {
+                preferredDatePickerStyle = UIDatePickerStyle.UIDatePickerStyleWheels
+            }
+        }
+
+        alertController.view.addSubview(timePicker)
+
+        val doneAction = UIAlertAction.actionWithTitle(
+            title = "Done",
+            style = UIAlertActionStyleDefault
+        ) { _ ->
+            val selectedDate = timePicker.date
+            val components = NSCalendar.currentCalendar.components(
+                NSCalendarUnitHour or NSCalendarUnitMinute,
+                fromDate = selectedDate
+            )
+            val hour = components.hour.toInt()
+            val minute = components.minute.toInt()
+            onTimeSelected(LocalTime(hour, minute))
+        }
+        alertController.addAction(doneAction)
+
+        val cancelAction = UIAlertAction.actionWithTitle(
+            title = "Cancel",
+            style = UIAlertActionStyleCancel
+        ) { _ ->
+            onTimeSelected(null)
+        }
+        alertController.addAction(cancelAction)
+
+        rootViewController.presentViewController(alertController, animated = true, completion = null)
     }
 
     actual fun getDate(): LocalDate {
@@ -138,17 +174,14 @@ actual class DateTimeWrapper private constructor(
         val calendar = NSCalendar.currentCalendar
         val components = NSDateComponents()
 
-        // Set date components
         components.year = date.year.toLong()
         components.month = date.monthNumber.toLong()
         components.day = date.dayOfMonth.toLong()
 
-        // Set time components
         components.hour = time.hour.toLong()
         components.minute = time.minute.toLong()
         components.second = 0
 
-        // Create NSDate
         val resultDate = calendar.dateFromComponents(components) ?: NSDate()
 
         return Instant.fromEpochMilliseconds((resultDate.timeIntervalSince1970 * 1000).toLong())
