@@ -1,6 +1,8 @@
 # Todo KMP - Kotlin Multiplatform Todo Application
 
-A modern, feature-rich Todo application built with Kotlin Multiplatform (KMP) that runs on both Android and iOS platforms. This project demonstrates best practices in cross-platform mobile development using Clean Architecture, MVVM pattern, and modern Android/iOS development practices.
+<img width="957" height="911" alt="image" src="https://github.com/user-attachments/assets/b68d50fa-1aaf-4bdb-b0ed-d462f078e938" />
+
+ToDo application built with Kotlin Multiplatform (KMP) that runs on both Android and iOS platforms. This project demonstrates best practices in cross-platform mobile development using Clean Architecture, MVVM pattern, and modern Android/iOS development practices.
 
 ## 🚀 Features
 
